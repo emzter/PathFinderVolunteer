@@ -1,3 +1,7 @@
 <resources>
-    <string name="app_name">PathFinderVolunteer</string>
+    <string name="app_name">Volunteer</string>
+    <string name="log_in">Log In</string>
+    <string name="register">Register</string>
+    <string name="main_menu_title">Welcome to PathFinder Volunteer</string>
+    <string name="main_menu_subtitle">Login or Register to get started</string>
 </resources>
