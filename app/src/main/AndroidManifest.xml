@@ -5,28 +5,37 @@
     <application
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/ic_launcher"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-
         <activity
             android:name=".StartActivity"
-            android:theme="@style/AppTheme.NoActionBar">
+            android:theme="@style/AppTheme.SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name=".MainMenuActivity"
-            android:theme="@style/AppTheme.NoActionBar" />
-
-        <activity android:name=".SignInActivity"
-            android:theme="@style/AppTheme.NoActionBar"
+            android:theme="@style/AppTheme.Dark"
+            android:screenOrientation="portrait"/>
+        <activity
+            android:name=".SignInActivity"
+            android:label=""
             android:parentActivityName=".MainMenuActivity"
-            android:label=""/>
+            android:theme="@style/AppTheme.Dark"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name=".SignUpActivity"
+            android:label=""
+            android:parentActivityName=".MainMenuActivity"
+            android:theme="@style/AppTheme.Dark"
+            android:screenOrientation="portrait" />
+
+        <activity android:name=".MainActivity"/>
+
     </application>
 
 </manifest>

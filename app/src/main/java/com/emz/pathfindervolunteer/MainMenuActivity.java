@@ -1,5 +1,6 @@
 package com.emz.pathfindervolunteer;
 
+import android.app.ActivityOptions;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -25,6 +26,13 @@ public class MainMenuActivity extends AppCompatActivity implements View.OnClickL
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ACTIVITY_CONSTANT) {
+            this.finish();
+        }
+    }
+
+    @Override
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.loginBtn:
@@ -37,11 +45,13 @@ public class MainMenuActivity extends AppCompatActivity implements View.OnClickL
     }
 
     private void startLoginActivity() {
-        startActivityForResult(new Intent(MainMenuActivity.this, SignInActivity.class), ACTIVITY_CONSTANT);
+        Intent loginActivity = new Intent(MainMenuActivity.this, SignInActivity.class);
+        startActivityForResult(loginActivity, ACTIVITY_CONSTANT);
     }
 
     private void startRegisterActivity() {
+        Intent loginActivity = new Intent(MainMenuActivity.this, SignUpActivity.class);
+        startActivityForResult(loginActivity, ACTIVITY_CONSTANT);
     }
-
 
 }
