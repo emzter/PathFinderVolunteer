@@ -77,7 +77,11 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onBackPressed() {
+        Intent returnIntent = getIntent();
+        setResult(RESULT_CANCELED, returnIntent);
+
         super.onBackPressed();
+
         overridePendingTransition( R.anim.trans_right_in, R.anim.trans_right_out);
     }
 
@@ -134,15 +138,16 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
                 .connect(new Velocity.ResponseListener() {
                     @Override
                     public void onVelocitySuccess(Velocity.Response response) {
-                        if(Objects.equals(response.body, "Success")){
-                            Log.d(TAG, response.body);
+                        JsonParser parser = new JsonParser();
+                        JsonObject jsonObject = parser.parse(response.body).getAsJsonObject();
+
+                        boolean status = jsonObject.get("status").getAsBoolean();
+
+                        if(status){
                             onRegisterSuccess();
-                        }else if(Objects.equals(response.body, "EMailUsed")){
-                            Log.w(TAG, response.body);
-                            onRegisterFailed(1);
                         }else{
-                            Log.e(TAG, response.body);
-                            onRegisterFailed(0);
+                            int error = jsonObject.get("error").getAsInt();
+                            onRegisterFailed(error);
                         }
                     }
 
@@ -201,7 +206,7 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void checkPassword(){
-        if (pass.isEmpty() || pass.length() < 8 || pass.length() > 12) {
+        if (pass.isEmpty() || pass.length() < 8) {
             passTv.setError(getString(R.string.password_error));
             valid = false;
         } else {
@@ -260,16 +265,8 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void startMainActivity() {
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(SignUpActivity.this, MainActivity.class));
-                finish();
-            }
-        };
-
-        Handler handler = new Handler();
-        handler.postDelayed(runnable, 3000);
+        startActivity(new Intent(SignUpActivity.this, MainActivity.class));
+        finish();
     }
 
     private void onLoginFailed(int stage) {

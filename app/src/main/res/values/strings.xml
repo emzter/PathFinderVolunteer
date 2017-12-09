@@ -23,7 +23,7 @@
     <string name="registering">Registering...</string>
 
     <string name="email_error">Enter a valid email address</string>
-    <string name="password_error">Between 8 and 12 alphanumeric characters</string>
+    <string name="password_error">Password need to be at least 8 characters.</string>
     <string name="no_name_enter_error">Please enter your name.</string>
     <string name="no_lastname_enter_error">Please enter your last name</string>
     <string name="confirm_password_error">Your password do not match.</string>
@@ -36,4 +36,6 @@
     <string name="no_user_found">No User Found.</string>
     <string name="profile_picture">Profile Image</string>
     <string name="title_activity_maps">Map</string>
+    <string name="online_text">ONLINE</string>
+    <string name="offline_text">OFFLINE</string>
 </resources>

@@ -28,7 +28,9 @@ public class MainMenuActivity extends AppCompatActivity implements View.OnClickL
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == ACTIVITY_CONSTANT) {
-            this.finish();
+            if(resultCode == RESULT_OK){
+                this.finish();
+            }
         }
     }
 

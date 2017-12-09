@@ -81,7 +81,11 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
     @Override
     public void onBackPressed() {
+        Intent returnIntent = getIntent();
+        setResult(RESULT_CANCELED, returnIntent);
+
         super.onBackPressed();
+
         overridePendingTransition( R.anim.trans_right_in, R.anim.trans_right_out);
     }
 
@@ -145,16 +149,8 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void startMainActivity() {
-        final Runnable runnable = new Runnable() {
-            @Override
-            public void run() {
-                startActivity(new Intent(SignInActivity.this, MainActivity.class));
-                finish();
-            }
-        };
-
-        Handler handler = new Handler();
-        handler.postDelayed(runnable, 3000);
+        startActivity(new Intent(SignInActivity.this, MainActivity.class));
+        finish();
     }
 
     private void onLoginFailed(int stage) {
@@ -180,7 +176,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
     }
 
     private void checkPassword() {
-        if (pass.isEmpty() || pass.length() < 8 || pass.length() > 12) {
+        if (pass.isEmpty() || pass.length() < 8) {
             passTv.setError(getString(R.string.password_error));
             valid = false;
         } else {

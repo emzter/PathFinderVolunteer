@@ -8,8 +8,9 @@
          location permissions for the 'MyLocation' functionality. 
     -->
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
         android:icon="@mipmap/ic_launcher"
@@ -44,6 +45,8 @@
             android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".MainActivity"
+            android:screenOrientation="portrait"
+            android:label=""
             android:theme="@style/AppTheme.NoActionBar" />
 
         <!--
