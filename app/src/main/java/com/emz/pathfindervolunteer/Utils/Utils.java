@@ -12,6 +12,7 @@ public class Utils {
     public final String SET_LOCATION_URL = "https://www.pathfinder.in.th/volunteer/setLocation/";
     public final String SET_TOKEN_URL = "https://www.pathfinder.in.th/volunteer/setToken/";
     public final String UTILITIES_URL = "https://www.pathfinder.in.th/utilities/";
+    public final String MAIN_URL = "https://www.pathfinder.in.th/volunteer/";
 
     private Context context;
 

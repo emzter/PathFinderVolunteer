@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 
 import com.emz.pathfindervolunteer.Utils.UserHelper;
+import com.rw.velocity.Velocity;
 
 public class StartActivity extends AppCompatActivity {
 
@@ -17,6 +18,9 @@ public class StartActivity extends AppCompatActivity {
         getWindow().getDecorView().setSystemUiVisibility(
                 View.SYSTEM_UI_FLAG_LAYOUT_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
         super.onCreate(savedInstanceState);
+
+        Velocity.initialize(3);
+
         setContentView(R.layout.activity_start);
 
         usrHelper = new UserHelper(this);

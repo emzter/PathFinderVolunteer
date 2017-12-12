@@ -6,6 +6,7 @@ import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.util.Patterns;
 import android.view.MenuItem;
 import android.view.View;
@@ -39,8 +40,6 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_in);
         overridePendingTransition( R.anim.trans_left_in, R.anim.trans_left_out);
-
-        Velocity.initialize(3);
 
         utils = new Utils(this);
         ui = new Ui(this);
@@ -128,6 +127,7 @@ public class SignInActivity extends AppCompatActivity implements View.OnClickLis
 
                         if(status){
                             String uid = jsonObject.get("uid").getAsString();
+                            Log.d(TAG, "LOGIN SUCCESS");
                             onLoginSuccess(uid);
                         }else{
                             int error = jsonObject.get("error").getAsInt();

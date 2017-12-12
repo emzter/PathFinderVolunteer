@@ -22,33 +22,32 @@ import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.Switch;
+import android.widget.TextView;
 
-import com.emz.pathfindervolunteer.Adapter.LocationSubscribeMapAdapter;
-import com.emz.pathfindervolunteer.Utils.Constants;
-import com.emz.pathfindervolunteer.Utils.JsonUtil;
-import com.emz.pathfindervolunteer.Utils.LocationSubscribePnCallback;
+import com.emz.pathfindervolunteer.Models.Users;
 import com.emz.pathfindervolunteer.Utils.UserHelper;
 import com.emz.pathfindervolunteer.Utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.common.collect.ImmutableMap;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.pubnub.api.PNConfiguration;
-import com.pubnub.api.PubNub;
 import com.pubnub.api.callbacks.PNCallback;
 import com.pubnub.api.models.consumer.PNPublishResult;
 import com.pubnub.api.models.consumer.PNStatus;
 import com.rw.velocity.Velocity;
 
-import java.util.Arrays;
 import java.util.Map;
-import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
+
+import de.hdodenhof.circleimageview.CircleImageView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback {
 
@@ -64,54 +63,64 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private UserHelper usrHelper;
     private Utils utils;
-
-    private SharedPreferences mSharedPrefs;
-    private String userName;
-    private PubNub pubNub;
+    private Users user;
 
     private ScheduledExecutorService executorService;
-    private Long startTime;
     private LocationManager lm;
     private Location location;
     private static Double longitude;
     private static Double latitude;
-    private Random random;
 
     private boolean online = false;
-
-    private static ImmutableMap<String, String> getNewLocationMessage(String userName, double randomLat, double randomLng, long elapsedTime) {
-        String newLat = Double.toString(randomLat);
-        String newLng = Double.toString(randomLng);
-
-        return ImmutableMap.<String, String>of("who", userName, "lat", newLat, "lng", newLng);
-    }
+    private CircleImageView navProPic;
+    private TextView navEMailText, navNameText;
+    private Marker myMarker;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Velocity.initialize(3);
-
-        mSharedPrefs = getSharedPreferences(Constants.DATASTREAM_PREFS, MODE_PRIVATE);
+        bindView();
 
         utils = new Utils(this);
         usrHelper = new UserHelper(this);
 
-        Log.d(TAG, "USERID: "+usrHelper.getUserId());
+        authCheck();
 
         lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
 
-        markMap();
-
-        this.random = new Random();
-        this.userName = mSharedPrefs.getString(Constants.DATASTREAM_UUID, "user_" + usrHelper.getUserId());
-        this.pubNub = initPubNub(this.userName);
-
-        bindView();
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    private void authCheck() {
+        if(usrHelper.getLoginStatus()){
+            loadUserData();
+        }else{
+            startMainMenuActivity();
+        }
+    }
+
+    private void startMainMenuActivity() {
+        Intent intent = new Intent(this, MainMenuActivity.class);
+        startActivity(intent);
+        finish();
+    }
+
+    private void loadUserData() {
+        Velocity.get(utils.MAIN_URL+"getUserDetail/"+usrHelper.getUserId())
+                .connect(new Velocity.ResponseListener() {
+                    @Override
+                    public void onVelocitySuccess(Velocity.Response response) {
+                        user = response.deserialize(Users.class);
+                    }
+
+                    @Override
+                    public void onVelocityFailed(Velocity.Response response) {
+
+                    }
+                });
     }
 
     @Override
@@ -173,35 +182,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
             lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, ln);
         }
-    }
 
-    @NonNull
-    private PubNub initPubNub(String userName) {
-        PNConfiguration pnConfiguration = new PNConfiguration();
-        pnConfiguration.setPublishKey(Constants.PUBNUB_PUBLISH_KEY);
-        pnConfiguration.setSubscribeKey(Constants.PUBNUB_SUBSCRIBE_KEY);
-        pnConfiguration.setSecure(true);
-        pnConfiguration.setUuid(userName);
-        return new PubNub(pnConfiguration);
+        LatLng latlng = new LatLng(latitude, longitude);
+        if(myMarker != null){
+            myMarker.setPosition(latlng);
+        }else{
+            myMarker = mMap.addMarker(new MarkerOptions().position(latlng).title("You're Here"));
+            myMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.mymarkersmall));
+        }
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 16.0f));
     }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-
-        pubNub.addListener(new LocationSubscribePnCallback(new LocationSubscribeMapAdapter(MainActivity.this, mMap), Constants.SUBSCRIBE_CHANNEL_NAME));
-        pubNub.subscribe().channels(Arrays.asList(Constants.SUBSCRIBE_CHANNEL_NAME)).execute();
         scheduleRandomUpdates();
-
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(17.0f));
-
+        markMap();
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
         progressBar.setVisibility(View.GONE);
     }
 
     private void scheduleRandomUpdates() {
         this.executorService = Executors.newSingleThreadScheduledExecutor();
-        this.startTime = System.currentTimeMillis();
-
         this.executorService.scheduleAtFixedRate(new Runnable() {
             @Override
             public void run() {
@@ -209,34 +211,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     @Override
                     public void run() {
                         markMap();
-
                         double newLat = latitude;
                         double newLng = longitude;
-
                         if(online){
                             updateLocation(newLat, newLng, usrHelper.getUserId());
                         }
-
-                        long elapsedTime = System.currentTimeMillis() - startTime;
-
-                        final Map<String, String> message = getNewLocationMessage(userName, newLat, newLng, elapsedTime);
-
-                        pubNub.publish().channel(Constants.SUBSCRIBE_CHANNEL_NAME).message(message).async(
-                                new PNCallback<PNPublishResult>() {
-                                    @Override
-                                    public void onResponse(PNPublishResult result, PNStatus status) {
-                                        try {
-                                            if (!status.isError()) {
-                                                Log.v(TAG, "publish(" + JsonUtil.asJson(result) + ")");
-                                            } else {
-                                                Log.v(TAG, "publishErr(" + status.toString() + ")");
-                                            }
-                                        } catch (Exception e) {
-                                            e.printStackTrace();
-                                        }
-                                    }
-                                }
-                        );
                     }
                 });
             }
@@ -299,6 +278,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         toggler = new ActionBarDrawerToggle(this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.addDrawerListener(toggler);
         toggler.syncState();
+
+        navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(this);
+
+        View navHeaderView = navigationView.getHeaderView(0);
+
+        navProPic = navHeaderView.findViewById(R.id.navProfilePic);
+        navEMailText = navHeaderView.findViewById(R.id.navEmailText);
+        navNameText = navHeaderView.findViewById(R.id.navNameText);
 
         progressBar = findViewById(R.id.main_activity_progressBar);
 

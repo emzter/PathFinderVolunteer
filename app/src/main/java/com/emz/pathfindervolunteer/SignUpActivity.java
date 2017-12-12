@@ -43,8 +43,6 @@ public class SignUpActivity extends AppCompatActivity implements View.OnClickLis
         setContentView(R.layout.activity_sign_up);
         overridePendingTransition( R.anim.trans_left_in, R.anim.trans_left_out);
 
-        Velocity.initialize(3);
-
         utils = new Utils(this);
         ui = new Ui(this);
         usrHelper = new UserHelper(this);

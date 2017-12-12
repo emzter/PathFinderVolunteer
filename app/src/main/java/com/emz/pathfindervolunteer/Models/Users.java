@@ -1,38 +1,63 @@
 package com.emz.pathfindervolunteer.Models;
 
-/**
- * Created by im_ae on 8/12/2560.
- */
+import com.google.gson.annotations.SerializedName;
 
 public class Users {
+    @SerializedName("id")
     private int id;
-    private String guid;
+    @SerializedName("email")
     private String email;
-    private int group;
-    private int status;
-    private int validate;
-    private String proPic;
+    @SerializedName("first_name")
     private String firstName;
+    @SerializedName("last_name")
     private String lastName;
-    private int sex;
-    private String birthdate;
-    private int telephone;
-    private int category;
+    @SerializedName("profile_picture")
+    private String proPic;
+    @SerializedName("telephone")
+    private String telephone;
+    @SerializedName("car_type")
+    private int carType;
+    @SerializedName("category")
+    private String category;
+    @SerializedName("status")
+    private int status;
+    @SerializedName("validate")
+    private int validate;
+    @SerializedName("online")
+    private int online;
+    @SerializedName("lat")
+    private double lat;
+    @SerializedName("lng")
+    private double lng;
 
-    public Users(int id, String guid, String email, int group, int status, int validate, String proPic, String firstName, String lastName, int sex, String birthdate, int telephone, int category) {
+    public Users(int id, String email, String firstName, String lastName, String proPic, String telephone, int carType, String category, int status, int validate, int online, double lat, double lng) {
         this.id = id;
-        this.guid = guid;
         this.email = email;
-        this.group = group;
-        this.status = status;
-        this.validate = validate;
-        this.proPic = proPic;
         this.firstName = firstName;
         this.lastName = lastName;
-        this.sex = sex;
-        this.birthdate = birthdate;
+        this.proPic = proPic;
         this.telephone = telephone;
+        this.carType = carType;
         this.category = category;
+        this.status = status;
+        this.validate = validate;
+        this.online = online;
+        this.lat = lat;
+        this.lng = lng;
+    }
+
+    public Users(int id, String email, String firstName, String lastName, String proPic, String telephone, int carType, String category, int status, int validate, int online) {
+        this.id = id;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.proPic = proPic;
+        this.telephone = telephone;
+        this.carType = carType;
+        this.category = category;
+        this.status = status;
+        this.validate = validate;
+        this.online = online;
     }
 
     public int getId() {
@@ -43,52 +68,12 @@ public class Users {
         this.id = id;
     }
 
-    public String getGuid() {
-        return guid;
-    }
-
-    public void setGuid(String guid) {
-        this.guid = guid;
-    }
-
     public String getEmail() {
         return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
-    }
-
-    public int getGroup() {
-        return group;
-    }
-
-    public void setGroup(int group) {
-        this.group = group;
-    }
-
-    public int getStatus() {
-        return status;
-    }
-
-    public void setStatus(int status) {
-        this.status = status;
-    }
-
-    public int getValidate() {
-        return validate;
-    }
-
-    public void setValidate(int validate) {
-        this.validate = validate;
-    }
-
-    public String getProPic() {
-        return proPic;
-    }
-
-    public void setProPic(String proPic) {
-        this.proPic = proPic;
     }
 
     public String getFirstName() {
@@ -107,35 +92,75 @@ public class Users {
         this.lastName = lastName;
     }
 
-    public int getSex() {
-        return sex;
+    public String getProPic() {
+        return proPic;
     }
 
-    public void setSex(int sex) {
-        this.sex = sex;
+    public void setProPic(String proPic) {
+        this.proPic = proPic;
     }
 
-    public String getBirthdate() {
-        return birthdate;
-    }
-
-    public void setBirthdate(String birthdate) {
-        this.birthdate = birthdate;
-    }
-
-    public int getTelephone() {
+    public String getTelephone() {
         return telephone;
     }
 
-    public void setTelephone(int telephone) {
-    this.telephone = telephone;
-}
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
 
-    public int getCategory() {
+    public int getCarType() {
+        return carType;
+    }
+
+    public void setCarType(int carType) {
+        this.carType = carType;
+    }
+
+    public String getCategory() {
         return category;
     }
 
-    public void setCategory(int category) {
+    public void setCategory(String category) {
         this.category = category;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public int getValidate() {
+        return validate;
+    }
+
+    public void setValidate(int validate) {
+        this.validate = validate;
+    }
+
+    public int getOnline() {
+        return online;
+    }
+
+    public void setOnline(int online) {
+        this.online = online;
+    }
+
+    public double getLat() {
+        return lat;
+    }
+
+    public void setLat(double lat) {
+        this.lat = lat;
+    }
+
+    public double getLng() {
+        return lng;
+    }
+
+    public void setLng(double lng) {
+        this.lng = lng;
     }
 }
