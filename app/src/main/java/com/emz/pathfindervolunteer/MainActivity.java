@@ -1,5 +1,6 @@
 package com.emz.pathfindervolunteer;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -42,6 +43,7 @@ import com.pubnub.api.models.consumer.PNPublishResult;
 import com.pubnub.api.models.consumer.PNStatus;
 import com.rw.velocity.Velocity;
 
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -88,8 +90,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         authCheck();
 
-        lm = (LocationManager) getSystemService(Context.LOCATION_SERVICE);
-
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
     }
@@ -128,8 +128,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (requestCode) {
             case 1:
                 if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    longitude = location.getLongitude();
-                    latitude = location.getLatitude();
+                    markMap();
                 } else {
 
                 }
@@ -151,55 +150,51 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             return;
         }
 
-        location = lm.getLastKnownLocation(LocationManager.GPS_PROVIDER);
+        location  = getLastKnownLocation();
 
         if (location != null) {
             longitude = location.getLongitude();
             latitude = location.getLatitude();
-        } else {
-            LocationListener ln = new LocationListener() {
-                @Override
-                public void onLocationChanged(Location location) {
-                    longitude = location.getLongitude();
-                    latitude = location.getLatitude();
-                }
-
-                @Override
-                public void onStatusChanged(String s, int i, Bundle bundle) {
-
-                }
-
-                @Override
-                public void onProviderEnabled(String s) {
-
-                }
-
-                @Override
-                public void onProviderDisabled(String s) {
-
-                }
-            };
-
-            lm.requestLocationUpdates(LocationManager.GPS_PROVIDER, 1000, 0, ln);
         }
+
+        Log.d(TAG, "LATLNG: " + latitude + longitude);
 
         LatLng latlng = new LatLng(latitude, longitude);
         if(myMarker != null){
             myMarker.setPosition(latlng);
         }else{
-            myMarker = mMap.addMarker(new MarkerOptions().position(latlng).title("You're Here"));
+            myMarker = mMap.addMarker(new MarkerOptions().position(latlng));
             myMarker.setIcon(BitmapDescriptorFactory.fromResource(R.drawable.mymarkersmall));
         }
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latlng, 16.0f));
     }
 
+    @SuppressLint("MissingPermission")
+    private Location getLastKnownLocation() {
+        lm = (LocationManager) getApplicationContext().getSystemService(LOCATION_SERVICE);
+        List<String> providers = lm.getProviders(true);
+        Location bestLocation = null;
+        for (String provider : providers) {
+            Location l = lm.getLastKnownLocation(provider);
+            if (l == null) {
+                continue;
+            }
+            if (bestLocation == null || l.getAccuracy() < bestLocation.getAccuracy()) {
+                bestLocation = l;
+            }
+        }
+
+        return bestLocation;
+    }
+
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
-        scheduleRandomUpdates();
-        markMap();
         mMap.animateCamera(CameraUpdateFactory.zoomTo(16.0f));
         progressBar.setVisibility(View.GONE);
+
+        markMap();
+        scheduleRandomUpdates();
     }
 
     private void scheduleRandomUpdates() {
