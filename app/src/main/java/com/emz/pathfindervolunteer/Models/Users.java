@@ -163,4 +163,8 @@ public class Users {
     public void setLng(double lng) {
         this.lng = lng;
     }
+
+    public String getName(){
+        return firstName+" "+lastName;
+    }
 }

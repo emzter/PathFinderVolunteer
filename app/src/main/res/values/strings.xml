@@ -38,4 +38,7 @@
     <string name="title_activity_maps">Map</string>
     <string name="online_text">ONLINE</string>
     <string name="offline_text">OFFLINE</string>
+    <string name="gps_network_not_enabled">GPS Network is not enabled</string>
+    <string name="open_location_settings">Open</string>
+    <string name="cancel">Cancel</string>
 </resources>
