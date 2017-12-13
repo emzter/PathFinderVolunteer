@@ -1,10 +1,14 @@
 package com.emz.pathfindervolunteer;
 
+import android.Manifest;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -18,6 +22,8 @@ import android.widget.ProgressBar;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import com.afollestad.materialdialogs.DialogAction;
+import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.emz.pathfindervolunteer.Models.Users;
@@ -39,6 +45,7 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.nlopez.smartlocation.SmartLocation;
+import io.nlopez.smartlocation.location.config.LocationParams;
 import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesWithFallbackProvider;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, OnLocationUpdatedListener {
@@ -46,7 +53,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private static final String TAG = MainActivity.class.getName();
 
     private DrawerLayout drawer;
-    private TextView navNameText, navEMailText;
+    private TextView navNameText;
+    private TextView navEMailText;
     private ProgressBar progressBar;
     private CircleImageView navProPic;
     private Switch onlineSwitch;
@@ -74,6 +82,58 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        checkPermission();
+        if(SmartLocation.with(this).location().state().locationServicesEnabled()){
+            Log.d(TAG, "LocationService: Found");
+            SmartLocation.with(this)
+                    .location()
+                    .config(LocationParams.NAVIGATION)
+                    .start(this);
+        }else{
+            Log.e(TAG, "LocationService: None");
+            locationServiceUnavailabled();
+        }
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        SmartLocation.with(this)
+                .location()
+                .stop();
+    }
+
+    private void checkPermission() {
+        if(ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION}, 1);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        switch (requestCode) {
+            case 1:
+                if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+
+                } else {
+
+                }
+                break;
+            default:
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        }
+    }
+
+    @Override
+    public void onLocationUpdated(Location location) {
+        markMap();
     }
 
     @Override
@@ -238,6 +298,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         latitude = location != null ? location.getLatitude() : 0;
         longitude = location != null ? location.getLongitude() : 0;
         LatLng current = new LatLng(latitude, longitude);
+        Log.d(TAG, "CURRENTLOCATION: "+current);
         if(myMarker != null){
             myMarker.setPosition(current);
         }else{
@@ -296,33 +357,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         onlineSwitch.setChecked(online);
     }
 
-    @Override
-    protected void onStart() {
-        super.onStart();
-        if(SmartLocation.with(this).location().state().locationServicesEnabled()){
-            SmartLocation.with(this)
-                    .location(new LocationGooglePlayServicesWithFallbackProvider(this))
-                    .start(this);
-            Log.d(TAG, "HAVELOCATIONSERVICE");
-        }else{
-            locationServiceUnavailabled();
-        }
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        SmartLocation.with(this)
-                .location()
-                .stop();
-    }
-
-    @Override
-    public void onLocationUpdated(Location location) {
-        markMap();
-    }
-
     private void locationServiceUnavailabled() {
-        Log.d(TAG, "NOLOCATIONSERVICE");
+        new MaterialDialog.Builder(this)
+                .title("Use Google's Location Services?")
+                .content("Let Google help apps determine location. This means sending anonymous location data to Google, even when no apps are running.")
+                .positiveText("Agree")
+                .onPositive(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        Intent intent = new Intent(Settings.ACTION_LOCATION_SOURCE_SETTINGS);
+                        startActivity(intent);
+                    }
+                })
+                .negativeText("Disagree")
+                .show();
     }
 }
