@@ -59,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Marker myMarker;
 
     private boolean online = false;
+    private double latitude;
+    private double longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -233,7 +235,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void markMap() {
         Location location = SmartLocation.with(this).location().getLastLocation();
-        LatLng current = new LatLng(location.getLatitude(), location.getLongitude());
+        latitude = location != null ? location.getLatitude() : 0;
+        longitude = location != null ? location.getLongitude() : 0;
+        LatLng current = new LatLng(latitude, longitude);
         if(myMarker != null){
             myMarker.setPosition(current);
         }else{
