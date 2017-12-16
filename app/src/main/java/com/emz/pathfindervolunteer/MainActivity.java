@@ -27,6 +27,7 @@ import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.emz.pathfindervolunteer.Models.Users;
+import com.emz.pathfindervolunteer.Models.VolunteerCategory;
 import com.emz.pathfindervolunteer.Utils.UserHelper;
 import com.emz.pathfindervolunteer.Utils.Utils;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -37,9 +38,15 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.rw.velocity.Velocity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 
@@ -69,16 +76,21 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private boolean online = false;
     private double latitude;
     private double longitude;
+    private List<VolunteerCategory> volCatList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        volCatList = new ArrayList<>();
+
         utils = new Utils(this);
         usrHelper = new UserHelper(this);
+
         bindView();
         authCheck();
+        getAllCat();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -139,6 +151,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
+        mMap.getUiSettings().setMapToolbarEnabled(false);
         progressBar.setVisibility(View.GONE);
     }
 
@@ -243,7 +256,32 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void onlineDuty() {
-        Velocity.post(utils.SET_DUTY_URL+"/online/")
+        ArrayList<String> options = new ArrayList<>();
+        for (VolunteerCategory vol : volCatList) {
+            options.add(vol.getName());
+        }
+        new MaterialDialog.Builder(this)
+                .title("GO ONLINE")
+                .cancelable(false)
+                .negativeText("Cancel")
+                .onNegative(new MaterialDialog.SingleButtonCallback() {
+                    @Override
+                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                        onlineSwitch.setChecked(false);
+                    }
+                })
+                .items(options)
+                .itemsCallback(new MaterialDialog.ListCallback() {
+                    @Override
+                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                        setOnline(position);
+                    }
+                })
+                .show();
+    }
+
+    private void setOnline(final int position) {
+        Velocity.post(utils.SET_DUTY_URL+"/online/"+position)
                 .withFormData("id", usrHelper.getUserId())
                 .connect(new Velocity.ResponseListener() {
                     @Override
@@ -256,6 +294,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             onlineSwitch.setText(R.string.online_text);
                             onlineSwitch.setChecked(true);
                             online = true;
+                            user.setCategory(position);
                             user.setOnline(1);
                         }else{
                             onlineSwitch.setText(R.string.offline_text);
@@ -371,5 +410,28 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 })
                 .negativeText("Disagree")
                 .show();
+    }
+
+    private void getAllCat() {
+        Velocity.get(utils.MAIN_URL+"getAllCat")
+                .connect(new Velocity.ResponseListener() {
+                    @Override
+                    public void onVelocitySuccess(Velocity.Response response) {
+                        Gson gson = new Gson();
+                        JsonParser parser = new JsonParser();
+                        JsonArray jsonArray = parser.parse(response.body).getAsJsonArray();
+
+                        for (int i = 0; i < jsonArray.size(); i++) {
+                            JsonElement mJson = jsonArray.get(i);
+                            VolunteerCategory cat = gson.fromJson(mJson, VolunteerCategory.class);
+                            volCatList.add(cat);
+                        }
+                    }
+
+                    @Override
+                    public void onVelocityFailed(Velocity.Response response) {
+                        //TODO: Can't Connect to the Server
+                    }
+                });
     }
 }

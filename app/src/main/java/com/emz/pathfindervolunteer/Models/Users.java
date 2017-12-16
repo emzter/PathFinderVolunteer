@@ -18,7 +18,7 @@ public class Users {
     @SerializedName("car_type")
     private int carType;
     @SerializedName("category")
-    private String category;
+    private int category;
     @SerializedName("status")
     private int status;
     @SerializedName("validate")
@@ -30,7 +30,7 @@ public class Users {
     @SerializedName("lng")
     private double lng;
 
-    public Users(int id, String email, String firstName, String lastName, String proPic, String telephone, int carType, String category, int status, int validate, int online, double lat, double lng) {
+    public Users(int id, String email, String firstName, String lastName, String proPic, String telephone, int carType, int category, int status, int validate, int online, double lat, double lng) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
@@ -46,7 +46,7 @@ public class Users {
         this.lng = lng;
     }
 
-    public Users(int id, String email, String firstName, String lastName, String proPic, String telephone, int carType, String category, int status, int validate, int online) {
+    public Users(int id, String email, String firstName, String lastName, String proPic, String telephone, int carType, int category, int status, int validate, int online) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
@@ -116,11 +116,11 @@ public class Users {
         this.carType = carType;
     }
 
-    public String getCategory() {
+    public int getCategory() {
         return category;
     }
 
-    public void setCategory(String category) {
+    public void setCategory(int category) {
         this.category = category;
     }
 
