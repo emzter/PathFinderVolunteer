@@ -26,6 +26,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.emz.pathfindervolunteer.Models.Orders;
 import com.emz.pathfindervolunteer.Models.Users;
 import com.emz.pathfindervolunteer.Models.VolunteerCategory;
 import com.emz.pathfindervolunteer.Utils.UserHelper;
@@ -46,7 +47,11 @@ import com.google.gson.JsonParser;
 import com.rw.velocity.Velocity;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import io.nlopez.smartlocation.OnLocationUpdatedListener;
 
@@ -77,6 +82,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private double latitude;
     private double longitude;
     private List<VolunteerCategory> volCatList;
+    private LinkedHashMap<Integer, Orders> orderLists;
+
+    private ScheduledExecutorService orderExcutorService;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -87,6 +95,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         utils = new Utils(this);
         usrHelper = new UserHelper(this);
+        orderLists = new LinkedHashMap<>();
 
         bindView();
         authCheck();
@@ -159,6 +168,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         switch (id){
+            case R.id.nav_settings:
+                onActionSettingsClicked();
+                break;
             case R.id.nav_logout:
                 onActionLogoutClicked();
                 break;
@@ -176,6 +188,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         } else {
             super.onBackPressed();
         }
+    }
+
+    private void onActionSettingsClicked() {
+        Intent intent = new Intent(this, OrderActivity.class);
+        startActivity(intent);
     }
 
     private void onActionLogoutClicked() {
@@ -281,8 +298,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void setOnline(final int position) {
-        Velocity.post(utils.SET_DUTY_URL+"/online/"+position)
+        Velocity.post(utils.SET_DUTY_URL+"/online/")
                 .withFormData("id", usrHelper.getUserId())
+                .withFormData("category", String.valueOf(volCatList.get(position).getId()))
                 .connect(new Velocity.ResponseListener() {
                     @Override
                     public void onVelocitySuccess(Velocity.Response response) {
@@ -294,8 +312,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             onlineSwitch.setText(R.string.online_text);
                             onlineSwitch.setChecked(true);
                             online = true;
-                            user.setCategory(position);
+                            user.setCategory(volCatList.get(position).getId());
                             user.setOnline(1);
+                            checkForOrder();
                         }else{
                             onlineSwitch.setText(R.string.offline_text);
                             onlineSwitch.setChecked(false);
@@ -312,6 +331,43 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         user.setOnline(0);
                     }
                 });
+    }
+
+    private void checkForOrder() {
+//        ORDER STATUS (0: Placing, 1: Accepted, 2: On Duty, 3: Completed, 4: Canceled)
+        orderExcutorService = Executors.newSingleThreadScheduledExecutor();
+        orderExcutorService.scheduleAtFixedRate(new Runnable() {
+            @Override
+            public void run() {
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Velocity.get(utils.MAIN_URL+"getAllOrder"+user.getCategory())
+                                .connect(new Velocity.ResponseListener() {
+                                    @Override
+                                    public void onVelocitySuccess(Velocity.Response response) {
+                                        Gson gson = new Gson();
+                                        JsonParser parser = new JsonParser();
+                                        JsonArray jsonArray = parser.parse(response.body).getAsJsonArray();
+
+                                        for (int i = 0; i < jsonArray.size(); i++) {
+                                            JsonElement mJson = jsonArray.get(i);
+                                            Orders order = gson.fromJson(mJson, Orders.class);
+                                            orderLists.put(order.getId(), order);
+                                        }
+
+                                        //TODO: Show order
+                                    }
+
+                                    @Override
+                                    public void onVelocityFailed(Velocity.Response response) {
+
+                                    }
+                                });
+                    }
+                });
+            }
+        }, 0, 5, TimeUnit.SECONDS);
     }
 
     private void updateLocation(LatLng latlng) {

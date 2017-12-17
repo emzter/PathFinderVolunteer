@@ -28,7 +28,6 @@
                 android:contentDescription="@string/app_name"
                 android:src="@drawable/banner_white" />
 
-
         </android.support.v7.widget.Toolbar>
 
 

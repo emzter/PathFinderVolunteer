@@ -46,13 +46,17 @@
             android:theme="@style/AppTheme.Dark" />
         <activity
             android:name=".MainActivity"
-            android:screenOrientation="portrait"
             android:label=" "
+            android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".OrderActivity"
+            android:screenOrientation="portrait"
+            android:parentActivityName=".MainActivity"
+            android:theme="@style/AppTheme.Dark.SolidBackground"/>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_maps_key" />
-
     </application>
 
 </manifest>
