@@ -52,7 +52,6 @@
         <activity android:name=".OrderActivity"
             android:label=" "
             android:screenOrientation="portrait"
-            android:parentActivityName=".MainActivity"
             android:theme="@style/AppTheme.Dark.SolidBackground"/>
 
         <meta-data

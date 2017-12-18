@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
+import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -49,6 +50,7 @@ import com.rw.velocity.Velocity;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -77,6 +79,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private GoogleMap mMap;
     private Marker myMarker;
+
+    private Location currentLocation;
 
     private boolean online = false;
     private double latitude;
@@ -154,6 +158,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void onLocationUpdated(Location location) {
+        currentLocation = location;
         markMap();
     }
 
@@ -253,7 +258,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             onlineSwitch.setText(R.string.offline_text);
                             onlineSwitch.setChecked(false);
                             online = false;
+                            user.setCategory(0);
                             user.setOnline(0);
+                            orderExcutorService.shutdown();
                         }else{
                             onlineSwitch.setText(R.string.online_text);
                             onlineSwitch.setChecked(true);
@@ -277,30 +284,36 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for (VolunteerCategory vol : volCatList) {
             options.add(vol.getName());
         }
-        new MaterialDialog.Builder(this)
-                .title("GO ONLINE")
-                .cancelable(false)
-                .negativeText("Cancel")
-                .onNegative(new MaterialDialog.SingleButtonCallback() {
-                    @Override
-                    public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
-                        onlineSwitch.setChecked(false);
-                    }
-                })
-                .items(options)
-                .itemsCallback(new MaterialDialog.ListCallback() {
-                    @Override
-                    public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
-                        setOnline(position);
-                    }
-                })
-                .show();
+        if(user.getCategory() == 0){
+            new MaterialDialog.Builder(this)
+                    .title("GO ONLINE")
+                    .cancelable(false)
+                    .negativeText("Cancel")
+                    .onNegative(new MaterialDialog.SingleButtonCallback() {
+                        @Override
+                        public void onClick(@NonNull MaterialDialog dialog, @NonNull DialogAction which) {
+                            onlineSwitch.setChecked(false);
+                        }
+                    })
+                    .items(options)
+                    .itemsCallback(new MaterialDialog.ListCallback() {
+                        @Override
+                        public void onSelection(MaterialDialog dialog, View itemView, int position, CharSequence text) {
+                            setOnline(volCatList.get(position).getId());
+                        }
+                    })
+                    .show();
+        }else{
+            Log.d(TAG, "ORDERUSERCAT: "+user.getCategory());
+            setOnline(user.getCategory());
+        }
+
     }
 
     private void setOnline(final int position) {
         Velocity.post(utils.SET_DUTY_URL+"/online/")
                 .withFormData("id", usrHelper.getUserId())
-                .withFormData("category", String.valueOf(volCatList.get(position).getId()))
+                .withFormData("category", String.valueOf(position))
                 .connect(new Velocity.ResponseListener() {
                     @Override
                     public void onVelocitySuccess(Velocity.Response response) {
@@ -312,7 +325,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             onlineSwitch.setText(R.string.online_text);
                             onlineSwitch.setChecked(true);
                             online = true;
-                            user.setCategory(volCatList.get(position).getId());
+                            user.setCategory(position);
                             user.setOnline(1);
                             checkForOrder();
                         }else{
@@ -342,10 +355,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        Velocity.get(utils.MAIN_URL+"getAllOrder"+user.getCategory())
+                        Velocity.get(utils.MAIN_URL+"getAllOrder/"+user.getCategory())
                                 .connect(new Velocity.ResponseListener() {
                                     @Override
                                     public void onVelocitySuccess(Velocity.Response response) {
+                                        Log.d(TAG, "ORDERJSON: "+response.body);
+                                        Log.d(TAG, "ORDERURL: "+response.requestUrl);
                                         Gson gson = new Gson();
                                         JsonParser parser = new JsonParser();
                                         JsonArray jsonArray = parser.parse(response.body).getAsJsonArray();
@@ -353,21 +368,56 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         for (int i = 0; i < jsonArray.size(); i++) {
                                             JsonElement mJson = jsonArray.get(i);
                                             Orders order = gson.fromJson(mJson, Orders.class);
-                                            orderLists.put(order.getId(), order);
+                                            if(orderLists.get(order.getId()) == null){
+                                                orderLists.put(order.getId(), order);
+                                            }
                                         }
 
-                                        //TODO: Show order
+                                        Log.d(TAG, "GETORDER");
+                                        showOrder();
                                     }
 
                                     @Override
                                     public void onVelocityFailed(Velocity.Response response) {
-
+                                        Log.e(TAG, "NOSERVERORDER");
                                     }
                                 });
                     }
                 });
             }
         }, 0, 5, TimeUnit.SECONDS);
+    }
+
+    private void showOrder() {
+        Log.d(TAG, "ORDER: "+orderLists.size());
+        if(orderLists.size() > 0){
+            for(Map.Entry<Integer, Orders> entry : orderLists.entrySet()){
+                if(!entry.getValue().isRead()){
+                    if(entry.getValue().getStatus() == 0){
+                        orderExcutorService.shutdown();
+                        Log.d(TAG, "ORDERSHOW: "+entry.getKey());
+                        entry.getValue().setRead(true);
+                        Intent intent = new Intent(this, OrderActivity.class);
+                        intent.putExtra("order", entry.getValue());
+                        intent.putExtra("location", currentLocation);
+                        startActivityForResult(intent, 0);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == 0) {
+            if(resultCode == RESULT_CANCELED){
+                checkForOrder();
+            } else if(resultCode == RESULT_OK){
+                Log.d(TAG, "ORDERACCEPT: "+data.getExtras().getInt("orderid"));
+                //TODO: Tracking order
+            }
+        }
     }
 
     private void updateLocation(LatLng latlng) {
