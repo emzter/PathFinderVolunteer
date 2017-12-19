@@ -20,6 +20,7 @@ android {
 
 
 
+
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
     implementation 'com.android.support:appcompat-v7:27.0.2'
@@ -39,6 +40,8 @@ dependencies {
     compile 'com.android.support:design:27.0.2'
     compile 'com.android.support:recyclerview-v7:27.0.2'
     compile 'com.android.support.constraint:constraint-layout:1.0.2'
+
+    compile 'com.github.markushi:circlebutton:1.1'
 
     compile 'com.github.ravindu1024:velocity:1.0.4'
 

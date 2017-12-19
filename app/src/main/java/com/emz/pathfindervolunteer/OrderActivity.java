@@ -125,7 +125,7 @@ public class OrderActivity extends AppCompatActivity {
         nameTv.setText(orderUser.getFullName());
         emailTv.setText(orderUser.getEmail());
         telTv.setText(orderUser.getTelephone());
-        distanceTv.setText(String.valueOf(distance));
+        distanceTv.setText(distance);
         Glide.with(this).load(utils.PROFILEPIC_URL+orderUser.getProPic()).into(proPic);
 
 

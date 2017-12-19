@@ -19,8 +19,8 @@
     <string name="login_subtitle">Login with your email to get started</string>
     <string name="register_title">Create an account</string>
 
-    <string name="authenticating">Authenticating...</string>
-    <string name="registering">Registering...</string>
+    <string name="authenticating">Authenticating…</string>
+    <string name="registering">Registering…</string>
 
     <string name="email_error">Enter a valid email address</string>
     <string name="password_error">Password need to be at least 8 characters.</string>
@@ -42,4 +42,17 @@
     <string name="open_location_settings">Open</string>
     <string name="cancel">Cancel</string>
     <string name="accept_this_job">ACCEPT THIS JOB</string>
+    <string name="directions">Directions</string>
+    <string name="pick_up">Pick Up</string>
+    <string name="no_btn">NO</string>
+    <string name="yes_btn">YES</string>
+    <string name="progress_dialog_title">Please Wait…</string>
+    <string name="cancel_order_dialog_content">Are you sure you want to cancel this order?</string>
+    <string name="cancel_order_dialog_title">Cancel This Order</string>
+    <string name="cant_cancel_order_message">Can\'t cancel the order. Please try again later.</string>
+    <string name="starting_order">Starting Order</string>
+    <string name="calceling">Canceling</string>
+    <string name="on_duty">On Duty…</string>
+    <string name="completing">Completing…</string>
+    <string name="error_completing_order">Error completing order. Please try again later.</string>
 </resources>

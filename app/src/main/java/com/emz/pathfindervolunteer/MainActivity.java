@@ -63,6 +63,10 @@ import io.nlopez.smartlocation.location.config.LocationParams;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, OnLocationUpdatedListener {
 
+    //TODO: Change sidebar header
+    //TODO: History Page
+    //TODO: Change User Marker
+
     private static final String TAG = MainActivity.class.getName();
 
     private DrawerLayout drawer;
@@ -86,6 +90,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private LinkedHashMap<Integer, Orders> orderLists;
 
     private ScheduledExecutorService orderExcutorService;
+    private double latitude, longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -99,8 +104,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         orderLists = new LinkedHashMap<>();
 
         bindView();
-        authCheck();
         getAllCat();
+        authCheck();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -257,7 +262,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                             online = false;
                             user.setCategory(0);
                             user.setOnline(0);
-                            orderExcutorService.shutdown();
+                            if(orderExcutorService != null){
+                                orderExcutorService.shutdown();
+                            }
                         }else{
                             onlineSwitch.setText(R.string.online_text);
                             onlineSwitch.setChecked(true);
@@ -373,7 +380,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                         }
 
                                         Log.d(TAG, "GETORDER");
-                                        showOrder();
+                                        if(user.getStatus() == 1){
+                                            checkDuty();
+                                        }else{
+                                            showOrder();
+                                        }
                                     }
 
                                     @Override
@@ -393,7 +404,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             for(Map.Entry<Integer, Orders> entry : orderLists.entrySet()){
                 if(!entry.getValue().isRead()){
                     if(entry.getValue().getStatus() == 0){
-                        orderExcutorService.shutdown();
+                        if(orderExcutorService != null){
+                            orderExcutorService.shutdown();
+                        }
                         Log.d(TAG, "ORDERSHOW: "+entry.getKey());
                         entry.getValue().setRead(true);
                         Intent intent = new Intent(this, OrderActivity.class);
@@ -425,7 +438,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(this, TrackingActivity.class);
         intent.putExtra("orders", acceptedOrder);
         intent.putExtra("orderUser", acceptedUser);
-        startActivityForResult(intent, 1);
+        intent.putExtra("currentLat", latitude);
+        intent.putExtra("currentLng", longitude);
+        startActivity(intent);
+        finish();
     }
 
     private void updateLocation(LatLng latlng) {
@@ -448,8 +464,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void markMap() {
         Location location = SmartLocation.with(this).location().getLastLocation();
-        double latitude = location != null ? location.getLatitude() : 0;
-        double longitude = location != null ? location.getLongitude() : 0;
+        latitude = location != null ? location.getLatitude() : 0;
+        longitude = location != null ? location.getLongitude() : 0;
         LatLng current = new LatLng(latitude, longitude);
         Log.d(TAG, "CURRENTLOCATION: "+current);
         if(myMarker != null){
@@ -508,6 +524,35 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             online = true;
         }
         onlineSwitch.setChecked(online);
+    }
+
+    private void checkDuty() {
+        if(orderExcutorService != null){
+            orderExcutorService.shutdown();
+        }
+        final Orders order = orderLists.get(user.getOnOrder());
+        Velocity.get(utils.UTILITIES_URL+"getProfile/"+order.getUserId())
+                .connect(new Velocity.ResponseListener() {
+                    @Override
+                    public void onVelocitySuccess(Velocity.Response response) {
+                        OrderUser orderUser = response.deserialize(OrderUser.class);
+
+                        if(order.getStatus() == 1){
+                            trackOrder(order, orderUser);
+                        }else if(order.getStatus() == 2){
+                            Intent intent = new Intent(MainActivity.this, OnDutyActivity.class);
+                            intent.putExtra("orders", order);
+                            intent.putExtra("orderUser", orderUser);
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
+
+                    @Override
+                    public void onVelocityFailed(Velocity.Response response) {
+                        Log.e("TEST", String.valueOf(R.string.no_internet_connection));
+                    }
+                });
     }
 
     private void locationServiceUnavailabled() {

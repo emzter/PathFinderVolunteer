@@ -15,8 +15,8 @@ public class Users {
     private String proPic;
     @SerializedName("telephone")
     private String telephone;
-    @SerializedName("car_type")
-    private int carType;
+    @SerializedName("on_order")
+    private int onOrder;
     @SerializedName("category")
     private int category;
     @SerializedName("status")
@@ -30,34 +30,34 @@ public class Users {
     @SerializedName("lng")
     private double lng;
 
-    public Users(int id, String email, String firstName, String lastName, String proPic, String telephone, int carType, int category, int status, int validate, int online, double lat, double lng) {
+    public Users(int id, String email, String firstName, String lastName, String proPic, String telephone, int onOrder, int category, int status, int validate, int online) {
         this.id = id;
         this.email = email;
         this.firstName = firstName;
         this.lastName = lastName;
         this.proPic = proPic;
         this.telephone = telephone;
-        this.carType = carType;
+        this.onOrder = onOrder;
+        this.category = category;
+        this.status = status;
+        this.validate = validate;
+        this.online = online;
+    }
+
+    public Users(int id, String email, String firstName, String lastName, String proPic, String telephone, int onOrder, int category, int status, int validate, int online, double lat, double lng) {
+        this.id = id;
+        this.email = email;
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.proPic = proPic;
+        this.telephone = telephone;
+        this.onOrder = onOrder;
         this.category = category;
         this.status = status;
         this.validate = validate;
         this.online = online;
         this.lat = lat;
         this.lng = lng;
-    }
-
-    public Users(int id, String email, String firstName, String lastName, String proPic, String telephone, int carType, int category, int status, int validate, int online) {
-        this.id = id;
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.proPic = proPic;
-        this.telephone = telephone;
-        this.carType = carType;
-        this.category = category;
-        this.status = status;
-        this.validate = validate;
-        this.online = online;
     }
 
     public int getId() {
@@ -108,12 +108,12 @@ public class Users {
         this.telephone = telephone;
     }
 
-    public int getCarType() {
-        return carType;
+    public int getOnOrder() {
+        return onOrder;
     }
 
-    public void setCarType(int carType) {
-        this.carType = carType;
+    public void setOnOrder(int onOrder) {
+        this.onOrder = onOrder;
     }
 
     public int getCategory() {
