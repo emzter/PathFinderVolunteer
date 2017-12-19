@@ -28,6 +28,7 @@ import com.rw.velocity.Velocity;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Locale;
 
@@ -187,7 +188,8 @@ public class OrderActivity extends AppCompatActivity {
                         boolean status = jsonObject.get("status").getAsBoolean();
                         if(status){
                             Intent returnIntent = getIntent();
-                            returnIntent.putExtra("orderid", orders.getId());
+                            returnIntent.putExtra("order", orders);
+                            returnIntent.putExtra("orderuser", orderUser);
                             setResult(RESULT_OK, returnIntent);
                             finish();
                         }else{

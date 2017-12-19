@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
-import android.location.LocationManager;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
@@ -27,6 +26,7 @@ import com.afollestad.materialdialogs.DialogAction;
 import com.afollestad.materialdialogs.MaterialDialog;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
+import com.emz.pathfindervolunteer.Models.OrderUser;
 import com.emz.pathfindervolunteer.Models.Orders;
 import com.emz.pathfindervolunteer.Models.Users;
 import com.emz.pathfindervolunteer.Models.VolunteerCategory;
@@ -60,7 +60,6 @@ import io.nlopez.smartlocation.OnLocationUpdatedListener;
 import de.hdodenhof.circleimageview.CircleImageView;
 import io.nlopez.smartlocation.SmartLocation;
 import io.nlopez.smartlocation.location.config.LocationParams;
-import io.nlopez.smartlocation.location.providers.LocationGooglePlayServicesWithFallbackProvider;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback, OnLocationUpdatedListener {
 
@@ -83,8 +82,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private Location currentLocation;
 
     private boolean online = false;
-    private double latitude;
-    private double longitude;
     private List<VolunteerCategory> volCatList;
     private LinkedHashMap<Integer, Orders> orderLists;
 
@@ -370,6 +367,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                                             Orders order = gson.fromJson(mJson, Orders.class);
                                             if(orderLists.get(order.getId()) == null){
                                                 orderLists.put(order.getId(), order);
+                                            }else{
+                                                orderLists.get(order.getId()).setStatus(order.getStatus());
                                             }
                                         }
 
@@ -413,11 +412,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (requestCode == 0) {
             if(resultCode == RESULT_CANCELED){
                 checkForOrder();
-            } else if(resultCode == RESULT_OK){
-                Log.d(TAG, "ORDERACCEPT: "+data.getExtras().getInt("orderid"));
-                //TODO: Tracking order
+            }
+            if(resultCode == RESULT_OK){
+                Orders acceptedOrder = (Orders) data.getExtras().getSerializable("order");
+                OrderUser acceptedUser = (OrderUser) data.getExtras().getSerializable("orderuser");
+                trackOrder(acceptedOrder, acceptedUser);
             }
         }
+    }
+
+    private void trackOrder(Orders acceptedOrder, OrderUser acceptedUser) {
+        Intent intent = new Intent(this, TrackingActivity.class);
+        intent.putExtra("orders", acceptedOrder);
+        intent.putExtra("orderUser", acceptedUser);
+        startActivityForResult(intent, 1);
     }
 
     private void updateLocation(LatLng latlng) {
@@ -440,8 +448,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void markMap() {
         Location location = SmartLocation.with(this).location().getLastLocation();
-        latitude = location != null ? location.getLatitude() : 0;
-        longitude = location != null ? location.getLongitude() : 0;
+        double latitude = location != null ? location.getLatitude() : 0;
+        double longitude = location != null ? location.getLongitude() : 0;
         LatLng current = new LatLng(latitude, longitude);
         Log.d(TAG, "CURRENTLOCATION: "+current);
         if(myMarker != null){

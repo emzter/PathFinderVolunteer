@@ -21,7 +21,7 @@
         android:theme="@style/AppTheme">
         <activity
             android:name=".StartActivity"
-            android:theme="@style/AppTheme.SplashScreen">
+            android:theme="@style/AppTheme.Dark.SolidBackground">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -49,10 +49,11 @@
             android:label=" "
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".OrderActivity"
+        <activity
+            android:name=".OrderActivity"
             android:label=" "
             android:screenOrientation="portrait"
-            android:theme="@style/AppTheme.Dark.SolidBackground"/>
+            android:theme="@style/AppTheme.Dark.SolidBackground" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -60,6 +61,11 @@
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
+
+        <activity android:name=".TrackingActivity"
+            android:label=" "
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme.Dark.SolidBackground"/>
     </application>
 
 </manifest>
