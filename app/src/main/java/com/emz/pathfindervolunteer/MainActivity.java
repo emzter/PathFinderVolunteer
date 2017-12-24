@@ -177,9 +177,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         switch (id){
-            case R.id.nav_settings:
-                onActionSettingsClicked();
-                break;
             case R.id.nav_logout:
                 onActionLogoutClicked();
                 break;
