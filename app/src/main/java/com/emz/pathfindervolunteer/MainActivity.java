@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -17,6 +18,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.CompoundButton;
 import android.widget.ProgressBar;
 import android.widget.Switch;
@@ -257,6 +259,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         boolean status = jsonObject.get("status").getAsBoolean();
 
                         if(status){
+                            getWindow().clearFlags(android.view.WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
                             onlineSwitch.setText(R.string.offline_text);
                             onlineSwitch.setChecked(false);
                             online = false;
@@ -326,6 +330,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                         boolean status = jsonObject.get("status").getAsBoolean();
 
                         if(status){
+                            getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
                             onlineSwitch.setText(R.string.online_text);
                             onlineSwitch.setChecked(true);
                             online = true;

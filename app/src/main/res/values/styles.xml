@@ -5,6 +5,7 @@
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
         <item name="colorAccent">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/noto_sans_thai_ui</item>
     </style>
 
     <style name="AppTheme.Dark" parent="Theme.AppCompat.Light.NoActionBar">
@@ -14,6 +15,7 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:textColor">@color/white</item>
         <item name="android:windowBackground">@drawable/app_bg</item>
+        <item name="android:fontFamily">@font/noto_sans_thai_ui</item>
     </style>
 
     <style name="AppTheme.Dark.SolidBackground" parent="Theme.AppCompat.Light.NoActionBar">
@@ -24,6 +26,7 @@
         <item name="android:textColor">@color/white</item>
         <item name="colorButtonNormal">@color/black</item>
         <item name="android:windowBackground">@color/colorAccent</item>
+        <item name="android:fontFamily">@font/noto_sans_thai_ui</item>
     </style>
 
     <style name="AppTheme.SplashScreen" parent="Theme.AppCompat.Light.NoActionBar">

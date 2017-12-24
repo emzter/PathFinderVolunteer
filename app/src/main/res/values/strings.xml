@@ -1,8 +1,8 @@
 <resources>
     <string name="app_name">Volunteer</string>
 
-    <string name="navigation_drawer_open">Open navigation drawer</string>
-    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="navigation_drawer_open" translatable="false">Open navigation drawer</string>
+    <string name="navigation_drawer_close" translatable="false">Close navigation drawer</string>
 
     <string name="log_in">Log In</string>
     <string name="register">Register</string>
@@ -55,4 +55,5 @@
     <string name="on_duty">On Duty…</string>
     <string name="completing">Completing…</string>
     <string name="error_completing_order">Error completing order. Please try again later.</string>
+    <string name="log_out">Log Out</string>
 </resources>

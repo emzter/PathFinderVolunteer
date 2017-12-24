@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Volunteer</string>
+
+    <string name="log_in">ลงชื่อเข้าใช้</string>
+    <string name="log_out">ลงชื่อออก</string>
+    <string name="register">สมัครสมาชิก</string>
+
+    <string name="email">ที่อยู่อีเมล์</string>
+    <string name="password">รหัสผ่าน</string>
+    <string name="confirm_password">ยืนยันรหัสผ่าน</string>
+    <string name="name">ชื่อ</string>
+    <string name="lastname">นามสกุล</string>
+
+    <string name="main_menu_title">ยินดีต้อนรับสู่ PathFinder อาสาสมัคร</string>
+    <string name="main_menu_subtitle">ลงชื่อเข้าใช้ หรือ สมัครสมาชิกเพื่อเริ่มใช้งาน</string>
+    <string name="login_title">ยินดีต้อนรับกลับมา!</string>
+    <string name="login_subtitle">ลงชื่อเข้าใช้ด้วยอีเมล์ของคุณเพื่อเริ่มใช้งาน</string>
+    <string name="register_title">สร้างผู้ใช้ใหม่</string>
+
+    <string name="authenticating">กำลังลงชื่อเข้าใช้…</string>
+    <string name="registering">กำลังสมัครสมาชิก…</string>
+
+    <string name="email_error">กรุณาใส่อีเมล์ที่ถูกต้อง</string>
+    <string name="password_error">รหัสผ่านต้องอยู่ระหว่าง 8 ถึง 12 ตัวอักษร</string>
+    <string name="no_name_enter_error">กรุณากรอกชื่อของคุณ</string>
+    <string name="no_lastname_enter_error">กรุณากรอกนามสกุลของคุณ</string>
+    <string name="confirm_password_error">รหัสผ่านของคุณไม่ตรงกัน</string>
+    <string name="email_already_used">อีเมล์นี้ถูกใช้แล้ว</string>
+    <string name="something_went_wrong">มีข้อผิดพลาดเกิดขึ้น</string>
+    <string name="no_user_found">ไม่พบชื่อผู้ใช้นี้</string>
+    <string name="auth_failed">เกิดข้อผิดพลาดในการลงชื่อเข้าใช้</string>
+    <string name="connection_error">ไม่สามารถเชื่อมต่อไปยังเซิฟเวอร์ได้</string>
+    <string name="no_internet_connection">ไม่พบการเชื่อมต่ออินเตอร์เน็ต</string>
+
+    <string name="profile_picture">ภาพโปรไฟล์</string>
+    <string name="online_text">ออนไลน์</string>
+    <string name="offline_text">ออฟไลน์</string>
+    <string name="gps_network_not_enabled">ระบบ GPS ไม่ได้ถูกเปิดใช้งาน</string>
+    <string name="open_location_settings">เปิด</string>
+    <string name="cancel">ยกเลิก</string>
+    <string name="accept_this_job">รับงานนี้</string>
+    <string name="directions">ทิศทาง</string>
+    <string name="pick_up">เริ่มงาน</string>
+    <string name="no_btn">ไม่</string>
+    <string name="yes_btn">ใช่</string>
+    <string name="progress_dialog_title">กรุณารอ…</string>
+    <string name="cancel_order_dialog_content">แน่ใจหรือไม่ว่าต้องการยกเลิกคำขอนี้?</string>
+    <string name="cancel_order_dialog_title">ยกเลิกคำขอ</string>
+    <string name="cant_cancel_order_message">ไม่สามารถยกเลิกได้ กรุณาลองใหม่อีกครั้ง</string>
+    <string name="starting_order">กำลังเริ่มงาน…</string>
+    <string name="calceling">กำลังยกเลิก…</string>
+    <string name="on_duty">กำลังปฏิบัติงาน…</string>
+    <string name="completing">กำลังเสร็จสิ้นงาน…</string>
+    <string name="error_completing_order">มีปัญหาในการจบงาน กรุณาลองใหม่อีกครั้ง</string>
+</resources>

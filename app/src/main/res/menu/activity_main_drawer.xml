@@ -8,12 +8,8 @@
         android:checkableBehavior="none">
 
         <item
-            android:id="@+id/nav_settings"
-            android:title="Settings" />
-
-        <item
             android:id="@+id/nav_logout"
-            android:title="Log Out" />
+            android:title="@string/log_out" />
     </group>
 
 </menu>
