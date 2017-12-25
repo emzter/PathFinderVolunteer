@@ -53,4 +53,5 @@
     <string name="on_duty">กำลังปฏิบัติงาน…</string>
     <string name="completing">กำลังเสร็จสิ้นงาน…</string>
     <string name="error_completing_order">มีปัญหาในการจบงาน กรุณาลองใหม่อีกครั้ง</string>
+    <string name="edit_profile">Edit Profile</string>
 </resources>

@@ -40,9 +40,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/kanit"
-                android:text="Test Last"
                 android:textColor="@color/white"
-                android:textSize="20dp"
                 android:textStyle="bold" />
 
         </LinearLayout>
@@ -116,6 +114,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:ems="1"
+                android:fontFamily="@font/noto_sans_thai_ui"
                 android:text="@string/directions"
                 android:textSize="18sp" />
 
@@ -126,6 +125,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:ems="1"
+                android:fontFamily="@font/noto_sans_thai_ui"
                 android:text="@string/cancel"
                 android:textSize="18sp" />
 

@@ -56,4 +56,5 @@
     <string name="completing">Completing…</string>
     <string name="error_completing_order">Error completing order. Please try again later.</string>
     <string name="log_out">Log Out</string>
+    <string name="edit_profile">Edit Profile</string>
 </resources>

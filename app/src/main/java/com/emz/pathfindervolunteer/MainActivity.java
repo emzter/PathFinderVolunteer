@@ -177,6 +177,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         int id = item.getItemId();
         switch (id){
+            case R.id.nav_edit_profile:
+                onActionSettingsClicked();
+                break;
             case R.id.nav_logout:
                 onActionLogoutClicked();
                 break;
@@ -197,7 +200,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     private void onActionSettingsClicked() {
-        Intent intent = new Intent(this, OrderActivity.class);
+        Intent intent = new Intent(this, EditProfileActivity.class);
         startActivity(intent);
     }
 
